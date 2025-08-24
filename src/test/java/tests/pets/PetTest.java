@@ -11,8 +11,7 @@ import payloads.pets.records.Tags;
 import java.util.List;
 
 import static io.restassured.RestAssured.*;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsIterableContaining.*;
+import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
 
 public class PetTest {
     @BeforeClass
@@ -38,15 +37,9 @@ public class PetTest {
         .when()
                 .post("/pet")
         .then()
-                .statusCode(200)
-                .body("id", equalTo(101))
-                .body("name", equalTo("Rex"))
-                .body("category.id", equalTo(10))
-                .body("category.name", equalTo("Dogs"))
-                .body("photoUrls", hasItems("https://petphotos.com/dog/rex123.jpg"))
-                .body("tags.id", hasItem(1))
-                .body("tags.name", hasItem("puppy"))
-                .body("status", equalTo("available"));
+                .assertThat()
+                .body(matchesJsonSchemaInClasspath("schemas/pet-schema.json"))
+                .statusCode(200);
 
     }
 
